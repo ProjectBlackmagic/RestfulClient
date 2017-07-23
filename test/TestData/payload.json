@@ -1,0 +1,33 @@
+﻿{
+  "guid": "47aab995-6582-4dae-9adf-34f398134b86",
+  "isActive": true,
+  "age": 39,
+  "eyeColor": "green",
+  "name": "Glover Lowe",
+  "gender": "male",
+  "email": "gloverlowe@pearlesex.com",
+  "about": "Quis nisi dolore ut incididunt irure irure enim sint excepteur Lorem. Velit esse consequat elit ex consectetur cupidatat voluptate ut. Ex consectetur excepteur excepteur sit cupidatat cupidatat amet nisi duis sunt do duis minim. Ex ullamco adipisicing aute Lorem aliqua. Esse Lorem ipsum esse mollit incididunt voluptate ullamco ex aute velit. Minim proident proident in laboris non ut. Aliqua cupidatat duis duis ut sunt quis labore laboris aliquip labore.\r\n",
+  "tags": [
+    "consectetur",
+    "occaecat",
+    "qui",
+    "velit",
+    "est",
+    "occaecat",
+    "est"
+  ],
+  "friends": [
+    {
+      "id": 0,
+      "name": "Gibson Peck"
+    },
+    {
+      "id": 1,
+      "name": "Joyner Moran"
+    },
+    {
+      "id": 2,
+      "name": "Hope Lawson"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <TargetFramework>netcoreapp1.1</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+      <PackageReference Include="MSTest.TestAdapter" Version="1.1.11" />
+      <PackageReference Include="MSTest.TestFramework" Version="1.1.11" />
+      <PackageReference Include="StyleCop.Analyzers" Version="1.0.2"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\src\ProjectBlackmagic.RestfulClient.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="TestData\**\*" CopyToOutputDirectory="Always" />
+      <AdditionalFiles Include="..\stylecop.json" />
+    </ItemGroup>
+    <PropertyGroup>
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+      <NoWarn>CS1591;SA1600;SA1602;$(NoWarn);SA1200;SA1124;SA1101;SA1124;SA1201;SA1202;SA1108;SA1649;SA1402</NoWarn>
+      <GenerateDocumentationFile>true</GenerateDocumentationFile>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    </PropertyGroup>
+</Project>
