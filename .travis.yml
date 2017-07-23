@@ -7,6 +7,7 @@ dist: trusty
 script:
   - dotnet restore
   - dotnet build
+  - dotnet test .\test\ProjectBlackmagic.RestfulClient.Test.csproj
 
 matrix:
   include:
