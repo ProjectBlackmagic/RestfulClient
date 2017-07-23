@@ -1,5 +1,5 @@
 language: csharp
-solution ProjectBlackmagic.RestfulClient.sln
+solution: ProjectBlackmagic.RestfulClient.sln
 
 mono: none
 dotnet: 1.0.3
