@@ -34,10 +34,9 @@ namespace ProjectBlackmagic.RestfulClient
         /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
         /// <param name="content">Content object to be serialized as request body.</param>
         /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
         /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
         /// <returns>Deserialized to type T object from response body.</returns>
-        T Post<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON);
+        T Post<T>(string action, object content, Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Performs HTTP Put method
@@ -45,10 +44,9 @@ namespace ProjectBlackmagic.RestfulClient
         /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
         /// <param name="content">Content object to be serialized as request body.</param>
         /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
         /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
         /// <returns>Deserialized to type T object from response body.</returns>
-        T Put<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON);
+        T Put<T>(string action, object content, Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Performs HTTP Patch method
@@ -56,10 +54,9 @@ namespace ProjectBlackmagic.RestfulClient
         /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
         /// <param name="content">Content object to be serialized as request body.</param>
         /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
         /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
         /// <returns>Deserialized to type T object from response body.</returns>
-        T Patch<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON);
+        T Patch<T>(string action, object content, Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Performs HTTP Delete method
@@ -88,10 +85,9 @@ namespace ProjectBlackmagic.RestfulClient
         /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
         /// <param name="content">Content object to be serialized as request body.</param>
         /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
         /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
         /// <returns>Deserialized to type T object from response body.</returns>
-        Task<T> PostAsync<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON);
+        Task<T> PostAsync<T>(string action, object content, Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Performs HTTP Put method (async)
@@ -99,10 +95,9 @@ namespace ProjectBlackmagic.RestfulClient
         /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
         /// <param name="content">Content object to be serialized as request body.</param>
         /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
         /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
         /// <returns>Deserialized to type T object from response body.</returns>
-        Task<T> PutAsync<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON);
+        Task<T> PutAsync<T>(string action, object content, Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Performs HTTP Patch method (async)
@@ -110,10 +105,9 @@ namespace ProjectBlackmagic.RestfulClient
         /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
         /// <param name="content">Content object to be serialized as request body.</param>
         /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
         /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
         /// <returns>Deserialized to type T object from response body.</returns>
-        Task<T> PatchAsync<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON);
+        Task<T> PatchAsync<T>(string action, object content, Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Performs HTTP Delete method (async)
