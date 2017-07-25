@@ -16,13 +16,15 @@ namespace ProjectBlackmagic.RestfulClient.Authentication
     public abstract class AuthenticatorConfigBase
     {
         /// <summary>
-        /// Gets certificate from local certificate store.
+        /// Gets certificate from certificate store.
         /// </summary>
         /// <param name="certificateName">Certificate name</param>
+        /// <param name="storeName">Name of certificate store containing the certificate. Defaults to personal store.</param>
+        /// <param name="storeLocation">Location of the certificate store containing the certificate. Defaults to local machine store.</param>
         /// <returns>Certificate from store</returns>
-        protected static X509Certificate2 GetCertificateFromStore(string certificateName)
+        protected static X509Certificate2 GetCertificateFromStore(string certificateName, StoreName storeName = StoreName.My, StoreLocation storeLocation = StoreLocation.LocalMachine)
         {
-            using (var store = new X509Store(StoreName.My, StoreLocation.LocalMachine))
+            using (var store = new X509Store(storeName, storeLocation))
             {
                 store.Open(OpenFlags.ReadOnly);
                 X509Certificate2Collection collection = store.Certificates.Find(X509FindType.FindBySubjectDistinguishedName, "CN=" + certificateName, true);

@@ -17,41 +17,26 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
         /// <summary>
         /// Gets the authentication url.
         /// </summary>
-        /// <value>
-        /// The authenication url.
-        /// </value>
         string AuthUrl { get; }
 
         /// <summary>
         /// Gets the site identifier.
         /// </summary>
-        /// <value>
-        /// The site identifier.
-        /// </value>
         string SiteId { get; }
 
         /// <summary>
         /// Gets the scope.
         /// </summary>
-        /// <value>
-        /// The scope.
-        /// </value>
         string Scope { get; }
 
         /// <summary>
         /// Gets the policy.
         /// </summary>
-        /// <value>
-        /// The policy.
-        /// </value>
         string Policy { get; }
 
         /// <summary>
         /// Gets the site certificate.
         /// </summary>
-        /// <value>
-        /// The site certificate.
-        /// </value>
         X509Certificate2 SiteCertificate { get; }
     }
 }
