@@ -34,7 +34,7 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Aad
         /// <param name="authority">The authority.</param>
         /// <param name="clientId">The client identifier.</param>
         /// <param name="resource">The resource.</param>
-        /// <param name="certificateName">Name of the certificate.</param>
+        /// <param name="certificateName">Name of the certificate in the local, personal certificate store.</param>
         public AadConfig(string authority, string clientId, string resource, string certificateName)
             : this(authority, clientId, resource, GetCertificateFromStore(certificateName))
         {
@@ -42,6 +42,20 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Aad
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AadConfig"/> class.
+        /// </summary>
+        /// <param name="authority">The authority.</param>
+        /// <param name="clientId">The client identifier.</param>
+        /// <param name="resource">The resource.</param>
+        /// <param name="certificateName">Name of the certificate.</param>
+        /// <param name="storeName">Name of the certificate store containing the certificate.</param>
+        /// <param name="storeLocation">Location of the certificate store containing the certificate.</param>
+        public AadConfig(string authority, string clientId, string resource, string certificateName, StoreName storeName, StoreLocation storeLocation)
+            : this(authority, clientId, resource, GetCertificateFromStore(certificateName, storeName, storeLocation))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AadConfig"/> class. Certificate is passed as binary.
         /// </summary>
         /// <param name="authority">The authority.</param>
         /// <param name="clientId">The client identifier.</param>

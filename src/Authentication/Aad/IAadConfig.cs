@@ -17,33 +17,21 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Aad
         /// <summary>
         /// Gets the client identifier.
         /// </summary>
-        /// <value>
-        /// The client identifier.
-        /// </value>
         string ClientId { get; }
 
         /// <summary>
         /// Gets the resource.
         /// </summary>
-        /// <value>
-        /// The resource.
-        /// </value>
         string Resource { get; }
 
         /// <summary>
         /// Gets the authority.
         /// </summary>
-        /// <value>
-        /// The authority.
-        /// </value>
         string Authority { get; }
 
         /// <summary>
         /// Gets the site certificate.
         /// </summary>
-        /// <value>
-        /// The site certificate.
-        /// </value>
         X509Certificate2 SiteCertificate { get; }
     }
 }
