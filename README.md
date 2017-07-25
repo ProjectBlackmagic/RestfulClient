@@ -24,6 +24,42 @@ public class BlogPost {
 
 ## Supported Authorization providers
 
+We expose an interface ```IAuthenticator``` and a generic ```AuthClient``` to define how to use different authentication providers. Once the client is created, it is used the same as the ```RestfulClient```.
+
+```csharp
+// Create your authenticator
+IAuthenticator authenticator = ...;
+
+// Pass the authenticator to the AuthClient
+var client = new AuthClient(authenticator, "http://yoururlhere.com");
+
+// Execute your request(s)
+var response = client.Get<MyObject>("resource");
+```
+
+
 ### Azure Active Directory
 
+For AAD authentication, we already define both a configuration interface ```IAadConfig``` and authenticator ```AadAuthenticator```.
+
+```csharp
+IAadConfig config = new AadConfig(...);
+IAuthenticator authenticator = new AadAuthenticator(config);
+
+var client = new AuthClient(authenticator);
+
+...
+```
+
 ### RPS (Live ID)
+
+For RPS (Live ID) authentication, we already define both a configuration interface ```IRpsConfig``` and authenticator ```RpsAuthenticator```.
+
+```csharp
+IRpsConfig config = new RpsConfig(...);
+IAuthenticator authenticator = new RpsAuthenticator(config);
+
+var client = new AuthClient(authenticator);
+
+...
+```
