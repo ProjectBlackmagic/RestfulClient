@@ -84,11 +84,11 @@ namespace ProjectBlackmagic.RestfulClient
         /// <param name="request">Request object.</param>
         /// <param name="statusCode">Status code.</param>
         /// <returns>Formated message.</returns>
-        public static string ToMessage(string message, HttpRequestMessage request, HttpStatusCode statusCode)
+        public static string ToMessage(string message, HttpRequestMessage request, HttpStatusCode? statusCode)
         {
-            return string.Format("Message: {0}{1}", message, Environment.NewLine) +
-                string.Format("Request: {0}{1}", request?.ToString(), Environment.NewLine) +
-                string.Format("StatusCode: {0}{1}", statusCode, Environment.NewLine);
+            return $"Message: {message}{Environment.NewLine}"
+                + $"Request: {request}{Environment.NewLine}"
+                + $"StatusCode: {statusCode}{Environment.NewLine}";
         }
 
         /// <summary>
@@ -99,9 +99,9 @@ namespace ProjectBlackmagic.RestfulClient
         /// <returns>Formated message.</returns>
         public static string ToMessage(string message, HttpResponseMessage response)
         {
-            return ToMessage(message, response?.RequestMessage, response.StatusCode) +
-                string.Format("Response: {0}{1}", response?.ToString(), Environment.NewLine) +
-                string.Format("ResponseContent: {0}{1}", response.Content?.ReadAsStringAsync().Result, Environment.NewLine);
+            return ToMessage(message, response?.RequestMessage, response?.StatusCode)
+                + $"Response: {response}{Environment.NewLine}"
+                + $"ResponseContent: {response?.Content?.ReadAsStringAsync().Result}{Environment.NewLine}";
         }
     }
 }

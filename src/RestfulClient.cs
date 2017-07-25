@@ -163,9 +163,10 @@ namespace ProjectBlackmagic.RestfulClient
         /// <returns>Deserialized to type T object from response body.</returns>
         public async Task<T> PostAsync<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON)
         {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, BuildUri(action));
-            httpRequest.Content = RestfulContent.GetHttpContent(content, contentType);
-
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, BuildUri(action))
+            {
+                Content = RestfulContent.GetHttpContent(content, contentType)
+            };
             return await PerformRequestAsync<T>(httpRequest, headers);
         }
 
@@ -180,9 +181,10 @@ namespace ProjectBlackmagic.RestfulClient
         /// <returns>Deserialized to type T object from response body.</returns>
         public async Task<T> PutAsync<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON)
         {
-            var httpRequest = new HttpRequestMessage(HttpMethod.Put, BuildUri(action));
-            httpRequest.Content = RestfulContent.GetHttpContent(content, contentType);
-
+            var httpRequest = new HttpRequestMessage(HttpMethod.Put, BuildUri(action))
+            {
+                Content = RestfulContent.GetHttpContent(content, contentType)
+            };
             return await PerformRequestAsync<T>(httpRequest, headers);
         }
 
@@ -198,9 +200,10 @@ namespace ProjectBlackmagic.RestfulClient
         public async Task<T> PatchAsync<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON)
         {
             var method = new HttpMethod("PATCH");
-            var httpRequest = new HttpRequestMessage(method, BuildUri(action));
-            httpRequest.Content = RestfulContent.GetHttpContent(content, contentType);
-
+            var httpRequest = new HttpRequestMessage(method, BuildUri(action))
+            {
+                Content = RestfulContent.GetHttpContent(content, contentType)
+            };
             return await PerformRequestAsync<T>(httpRequest, headers);
         }
 
