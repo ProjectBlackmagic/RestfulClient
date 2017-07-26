@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient
 {
@@ -54,16 +55,31 @@ namespace ProjectBlackmagic.RestfulClient
         /// </summary>
         /// <param name="code">Status code of the mocked response.</param>
         /// <param name="endpoint">Request endpoint.</param>
-        /// <param name="content">Request content.</param>
-        /// <param name="contentType">Request content type.</param>
         /// <returns>Mocked response handler.</returns>
-        public static FakeResponseHandler Create(HttpStatusCode code, string endpoint, object content = null, ContentType contentType = ContentType.JSON)
+        public static FakeResponseHandler Create(HttpStatusCode code, string endpoint)
         {
             var fakeResponseMessage = new HttpResponseMessage(code);
-            if (content != null)
+
+            var fakeResponseHandler = new FakeResponseHandler();
+            fakeResponseHandler.AddFakeResponse(new Uri(endpoint), fakeResponseMessage);
+
+            return fakeResponseHandler;
+        }
+
+        /// <summary>
+        /// Creates a fake response handler
+        /// </summary>
+        /// <param name="code">Status code of the mocked response.</param>
+        /// <param name="endpoint">Request endpoint.</param>
+        /// <param name="content">Request content.</param>
+        /// <param name="serializer">Request content serializer.</param>
+        /// <returns>Mocked response handler.</returns>
+        public static FakeResponseHandler Create(HttpStatusCode code, string endpoint, object content, IRestfulContentSerializer serializer)
+        {
+            var fakeResponseMessage = new HttpResponseMessage(code)
             {
-                fakeResponseMessage.Content = RestfulContent.GetHttpContent(content, contentType);
-            }
+                Content = serializer.Serialize(content)
+            };
 
             var fakeResponseHandler = new FakeResponseHandler();
             fakeResponseHandler.AddFakeResponse(new Uri(endpoint), fakeResponseMessage);

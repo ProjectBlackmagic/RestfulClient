@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace ProjectBlackmagic.RestfulClient.Test
 {
@@ -22,7 +24,8 @@ namespace ProjectBlackmagic.RestfulClient.Test
 
         public string Name { get; set; }
 
-        public string Gender { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public Gender Gender { get; set; }
 
         public string Email { get; set; }
 
@@ -38,5 +41,11 @@ namespace ProjectBlackmagic.RestfulClient.Test
         public int Id { get; set; }
 
         public string Name { get; set; }
+    }
+
+    public enum Gender
+    {
+        Male,
+        Female
     }
 }

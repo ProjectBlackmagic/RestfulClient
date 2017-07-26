@@ -10,6 +10,7 @@ using System.IO;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Test
 {
@@ -21,7 +22,7 @@ namespace ProjectBlackmagic.RestfulClient.Test
         private RestfulClient TestClient(string endpoint, HttpStatusCode statusCode, object payload = null)
         {
             var host = "http://fakeEndpoint";
-            var messageHandler = FakeResponseHandler.Create(statusCode, host + "/" + endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(statusCode, host + "/" + endpoint, payload, new JsonContentSerializer());
 
             return new RestfulClient(host, messageHandler);
         }

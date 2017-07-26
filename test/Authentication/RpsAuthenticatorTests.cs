@@ -16,6 +16,7 @@ using Moq;
 using Newtonsoft.Json;
 using ProjectBlackmagic.RestfulClient.Authentication;
 using ProjectBlackmagic.RestfulClient.Authentication.Rps;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Test
 {
@@ -34,7 +35,7 @@ namespace ProjectBlackmagic.RestfulClient.Test
             var rpsMessageHandler = new HttpClientHandler();
             var rpsDelegatingHandlers = new DelegatingHandler[]
             {
-                FakeResponseHandler.Create(rpsStatusCode, authHost, rpsPayload)
+                FakeResponseHandler.Create(rpsStatusCode, authHost, rpsPayload, new JsonContentSerializer())
             };
             return new RpsAuthenticator(config, rpsMessageHandler, rpsDelegatingHandlers);
         }

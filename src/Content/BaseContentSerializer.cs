@@ -10,15 +10,21 @@ using System.Threading.Tasks;
 
 namespace ProjectBlackmagic.RestfulClient.Content
 {
-    public class BaseContentSerializer : IRestfulContentSerializer
+    /// <summary>
+    /// Base implementatation of <see cref="IRestfulContentSerializer"/>.
+    /// </summary>
+    public abstract class BaseContentSerializer : IRestfulContentSerializer
     {
+        /// <inheritdoc/>
         public abstract HttpContent Serialize(object content);
 
+        /// <inheritdoc/>
         public Task<string> Deserialize(HttpResponseMessage responseMessage)
         {
             return responseMessage.Content?.ReadAsStringAsync();
         }
 
+        /// <inheritdoc/>
         public abstract Task<T> Deserialize<T>(HttpResponseMessage responseMessage);
     }
 }

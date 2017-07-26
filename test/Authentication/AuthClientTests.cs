@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using ProjectBlackmagic.RestfulClient.Authentication;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Test
 {
@@ -28,7 +29,7 @@ namespace ProjectBlackmagic.RestfulClient.Test
             var clientHandler = new HttpClientHandler();
             var delegatingHandlers = new DelegatingHandler[]
             {
-                FakeResponseHandler.Create(httpStatusCode, host + "/" + endpoint, httpPayload)
+                FakeResponseHandler.Create(httpStatusCode, host + "/" + endpoint, httpPayload, new JsonContentSerializer())
             };
 
             return new AuthClient(authenticator, host, clientHandler, delegatingHandlers);
