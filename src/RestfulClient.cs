@@ -216,7 +216,6 @@ namespace ProjectBlackmagic.RestfulClient
             {
                 Content = config.RequestContentSerializer.Serialize(content)
             };
-
             return await PerformRequestAsync<T>(httpRequest, headers);
         }
 
@@ -235,7 +234,6 @@ namespace ProjectBlackmagic.RestfulClient
             {
                 Content = config.RequestContentSerializer.Serialize(content)
             };
-
             return await PerformRequestAsync<T>(httpRequest, headers);
         }
 
