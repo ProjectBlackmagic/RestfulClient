@@ -6,11 +6,14 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using ProjectBlackmagic.RestfulClient.Configuration;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
 {
@@ -30,9 +33,14 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
         public IRpsConfig Config { get; protected set; }
 
         /// <summary>
-        /// Gets the query string used in RPS (Live ID) requests.
+        /// Gets the query data used in RPS (Live ID) requests.
         /// </summary>
-        public string QueryString => $"grant_type=client_credentials&client_id={Config.SiteId}&scope={ServiceScope}";
+        public IDictionary<string, string> QueryData => new Dictionary<string, string>()
+        {
+            { "grant_type", "client_credentials" },
+            { "client_id", Config.SiteId },
+            { "scope", ServiceScope }
+        };
 
         /// <summary>
         /// Gets the service scope used in RPS (Live ID) requests.
@@ -60,6 +68,11 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
         public RpsAuthenticator(IRpsConfig config, HttpClientHandler clientHandler, params DelegatingHandler[] delegatingHandlers)
         {
             Config = config;
+
+            var tokenClientConfig = new RequestConfiguration()
+            {
+                RequestContentSerializer = new FormContentSerializer()
+            };
 
             tokenClient = new RestfulClient(config.AuthUrl, EnhanceClientHandler(clientHandler), delegatingHandlers);
             lockSlim = new ReaderWriterLockSlim();
@@ -93,7 +106,7 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
                     try
                     {
                         // Perform the request for the token
-                        token = await tokenClient.PostAsync<RpsToken>(string.Empty, QueryString, null, ContentType.UrlEncodedForm);
+                        token = await tokenClient.PostAsync<RpsToken>(string.Empty, QueryData);
 
                         // Expire the token in the cache before the token actually expires, to be safe
                         var earlyExpiry = token.ExpiresIn * 0.95;
