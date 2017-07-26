@@ -23,6 +23,7 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Aad
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AadAuthenticator"/> class.
+        /// Base constructor.
         /// </summary>
         /// <param name="config">The configuration.</param>
         public AadAuthenticator(IAadConfig config)

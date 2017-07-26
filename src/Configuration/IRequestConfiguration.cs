@@ -1,39 +1,31 @@
-// <copyright file="IRestfulConfiguration.cs" company="ProjectBlackmagic">
+// <copyright file="IRequestConfiguration.cs" company="ProjectBlackmagic">
 // RestfulClient
 // Copyright (c) ProjectBlackmagic. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // Github: https://github.com/ProjectBlackmagic/RestfulClient.
 // </copyright>
 
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Threading;
 using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Configuration
 {
     /// <summary>
-    /// Interface for configurations for RestfulClient.
+    /// Interface for request configurations for RestfulClient.
     /// </summary>
-    public interface IRestfulConfiguration
+    public interface IRequestConfiguration
     {
         /// <summary>
-        /// Gets or sets the maximum buffer size for response content.
+        /// Gets or sets the completion option for the restful request(s).
         /// </summary>
-        //long MaxResponseContentBufferSize { get; set; }
+        HttpCompletionOption? CompletionOption { get; set; }
 
         /// <summary>
-        /// Gets or sets the default request timeout span.
+        /// Gets or sets the cancellation token for the restful request(s).
         /// </summary>
-        //TimeSpan Timeout { get; set; }
-
-        /// <summary>
-        /// Gets or sets the default http request headers added to each request.
-        /// </summary>
-        //HttpRequestHeaders DefaultRequestHeaders { get; set; }
-
-        HttpCompletionOption CompletionOption { get; set; }
+        CancellationToken? CancellationToken { get; set; }
 
         /// <summary>
         /// Gets or sets the custom request headers added to each request.
@@ -46,8 +38,14 @@ namespace ProjectBlackmagic.RestfulClient.Configuration
         IRestfulContentSerializer RequestContentSerializer { get; set; }
 
         /// <summary>
-        /// Gets or sets the response content serializer.
+        /// Gets or sets the response content deserializer.
         /// </summary>
-        IRestfulContentSerializer ResponseContentSerializer { get; set; }
+        IRestfulContentSerializer ResponseContentDeserializer { get; set; }
+
+        /// <summary>
+        /// Applies a base configuration to the current configuration.
+        /// </summary>
+        /// <param name="baseConfig">Base restful configuration</param>
+        void ApplyBaseConfiguration(IRequestConfiguration baseConfig);
     }
 }

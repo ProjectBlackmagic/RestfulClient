@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using ProjectBlackmagic.RestfulClient.Configuration;
 
 namespace ProjectBlackmagic.RestfulClient.Authentication
 {
@@ -23,30 +24,59 @@ namespace ProjectBlackmagic.RestfulClient.Authentication
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthClient" /> class.
+        /// Base constructor.
         /// </summary>
         /// <param name="authenticator">Authenticator</param>
         /// <param name="apiEndpoint">API Endpoint</param>
         public AuthClient(IAuthenticator authenticator, string apiEndpoint)
-            : this(authenticator, apiEndpoint, null)
+            : base(apiEndpoint)
         {
+            this.authenticator = authenticator;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthClient" /> class.
-        /// Constructor with custom message handler and additional delegating handlers.
+        /// Constructor with custom client handler and additional delegating handlers.
         /// </summary>
         /// <param name="authenticator">Authenticator</param>
         /// <param name="apiEndpoint">API Endpoint</param>
-        /// <param name="clientHandler">Http client handler</param>
+        /// <param name="clientHandler">Custom client handler</param>
         /// <param name="delegatingHandlers">Delegating handlers</param>
         public AuthClient(IAuthenticator authenticator, string apiEndpoint, HttpClientHandler clientHandler, params DelegatingHandler[] delegatingHandlers)
-            : base(apiEndpoint, authenticator.EnhanceClientHandler(clientHandler), delegatingHandlers)
+            : base(apiEndpoint, clientHandler, delegatingHandlers)
+        {
+            this.authenticator = authenticator;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthClient" /> class.
+        /// </summary>
+        /// <param name="authenticator">Authenticator</param>
+        /// <param name="apiEndpoint">API Endpoint</param>
+        /// <param name="baseConfig">Base request configuration.</param>
+        public AuthClient(IAuthenticator authenticator, string apiEndpoint, IRequestConfiguration baseConfig)
+            : base(apiEndpoint, baseConfig)
+        {
+            this.authenticator = authenticator;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthClient" /> class.
+        /// Constructor with base request configuration, custom client handler, and additional delegating handlers.
+        /// </summary>
+        /// <param name="authenticator">Authenticator</param>
+        /// <param name="apiEndpoint">API Endpoint</param>
+        /// <param name="baseConfig">Base request configuration.</param>
+        /// <param name="clientHandler">Custom client handler</param>
+        /// <param name="delegatingHandlers">Delegating handlers</param>
+        public AuthClient(IAuthenticator authenticator, string apiEndpoint, IRequestConfiguration baseConfig, HttpClientHandler clientHandler, params DelegatingHandler[] delegatingHandlers)
+            : base(apiEndpoint, baseConfig, authenticator.EnhanceClientHandler(clientHandler), delegatingHandlers)
         {
             this.authenticator = authenticator;
         }
 
         /// <inheritdoc/>
-        protected override async Task<T> PerformRequestAsync<T>(HttpRequestMessage httpRequest, Dictionary<string, string> headers = null)
+        protected override async Task<T> PerformRequestAsync<T>(HttpRequestMessage httpRequest, IRequestConfiguration requestConfig = null)
         {
             try
             {
@@ -61,7 +91,7 @@ namespace ProjectBlackmagic.RestfulClient.Authentication
 
             try
             {
-                return await base.PerformRequestAsync<T>(httpRequest, headers);
+                return await base.PerformRequestAsync<T>(httpRequest, requestConfig);
             }
             catch (RestfulClientException ex)
             {
