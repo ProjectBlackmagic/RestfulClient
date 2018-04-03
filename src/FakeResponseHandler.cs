@@ -22,6 +22,11 @@ namespace ProjectBlackmagic.RestfulClient
         private readonly Dictionary<Uri, HttpResponseMessage> fakeResponses = new Dictionary<Uri, HttpResponseMessage>();
 
         /// <summary>
+        /// Gets list of requests made via the handler
+        /// </summary>
+        public List<HttpRequestMessage> Requests { get; private set; } = new List<HttpRequestMessage>();
+
+        /// <summary>
         /// Add fake response identified by URL.
         /// </summary>
         /// <param name="uri">Url ("key") of the response.</param>
@@ -39,13 +44,18 @@ namespace ProjectBlackmagic.RestfulClient
         /// <returns>Mocked response.</returns>
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            Requests.Add(request);
+
             if (fakeResponses.ContainsKey(request.RequestUri))
             {
                 return Task.FromResult(fakeResponses[request.RequestUri]);
             }
             else
             {
-                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound) { RequestMessage = request });
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    RequestMessage = request
+                });
             }
         }
 

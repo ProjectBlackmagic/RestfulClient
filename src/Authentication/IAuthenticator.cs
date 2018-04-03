@@ -23,6 +23,11 @@ namespace ProjectBlackmagic.RestfulClient.Authentication
         HttpClientHandler EnhanceClientHandler(HttpClientHandler clientHandler);
 
         /// <summary>
+        /// Gets the authorization header scheme.
+        /// </summary>
+        string Scheme { get; }
+
+        /// <summary>
         /// Gets the authorization value.
         /// </summary>
         /// <returns>Authorization header value</returns>
