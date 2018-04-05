@@ -24,8 +24,6 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
         private static string endpoint = "http://fakeEndpoint/test";
         private static TestObject payload;
 
-        private Mock<IAuthenticator> authenticatorMock;
-
         private AuthClient GetTestClient(IAuthenticator authenticator, string endpoint, HttpStatusCode httpStatusCode, object httpPayload = null)
         {
             var host = "http://fakeEndpoint";
@@ -44,15 +42,11 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
             payload = JsonConvert.DeserializeObject<TestObject>(File.ReadAllText("TestData/payload.json"));
         }
 
-        [TestInitialize]
-        public void InitTest()
-        {
-            authenticatorMock = new Mock<IAuthenticator>();
-        }
-
         [TestMethod]
         public async Task GetAsync_TestRequestAndResponse()
         {
+            var authenticatorMock = new Mock<IAuthenticator>();
+
             authenticatorMock
                 .SetupGet(p => p.Scheme)
                 .Returns("fakeScheme");
@@ -74,6 +68,8 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
         [TestMethod]
         public async Task GetAsync_TestAuthorizationHeaderSetup()
         {
+            var authenticatorMock = new Mock<IAuthenticator>();
+
             authenticatorMock
                 .SetupGet(p => p.Scheme)
                 .Returns("fakeScheme");
@@ -104,6 +100,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
         public async Task GetAsync_TestAuthorizationFailed()
         {
             var authValueException = new Exception("Test auth token error");
+            var authenticatorMock = new Mock<IAuthenticator>();
 
             authenticatorMock
                 .Setup(p => p.GetAuthValue())
@@ -139,6 +136,8 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
         [TestMethod]
         public async Task GetAsync_TestRequestUnauthorized()
         {
+            var authenticatorMock = new Mock<IAuthenticator>();
+
             authenticatorMock
                 .SetupGet(p => p.Scheme)
                 .Returns("fakeScheme");
@@ -171,6 +170,8 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
         [TestMethod]
         public async Task GetAsync_TestRequestFailed()
         {
+            var authenticatorMock = new Mock<IAuthenticator>();
+
             authenticatorMock
                 .SetupGet(p => p.Scheme)
                 .Returns("fakeScheme");

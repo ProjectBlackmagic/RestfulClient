@@ -22,7 +22,7 @@ namespace ProjectBlackmagic.RestfulClient
         private readonly Dictionary<Uri, HttpResponseMessage> fakeResponses = new Dictionary<Uri, HttpResponseMessage>();
 
         /// <summary>
-        /// Gets list of requests made via the handler
+        /// Gets list of requests made via the handler. Primarily used to enable test assertions on outgoing requests.
         /// </summary>
         public List<HttpRequestMessage> Requests { get; private set; } = new List<HttpRequestMessage>();
 
