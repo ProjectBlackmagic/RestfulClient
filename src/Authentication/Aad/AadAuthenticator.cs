@@ -33,10 +33,13 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Aad
         }
 
         /// <inheritdoc/>
+        public string Scheme => "Bearer";
+
+        /// <inheritdoc/>
         public async Task<string> GetAuthValue()
         {
             var authResult = await authContext.AcquireTokenAsync(resource, clientCert);
-            return $"Bearer {authResult.AccessToken}";
+            return authResult.AccessToken;
         }
 
         /// <inheritdoc/>

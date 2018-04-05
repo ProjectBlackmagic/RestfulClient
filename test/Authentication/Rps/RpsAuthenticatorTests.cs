@@ -1,4 +1,4 @@
-// <copyright file="RpsAuthenticatorTests.cs" company="ProjectBlackmagic">
+﻿// <copyright file="RpsAuthenticatorTests.cs" company="ProjectBlackmagic">
 // RestfulClient
 // Copyright (c) ProjectBlackmagic. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
@@ -10,17 +10,15 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using Newtonsoft.Json;
 using ProjectBlackmagic.RestfulClient.Authentication;
 using ProjectBlackmagic.RestfulClient.Authentication.Rps;
 
-namespace ProjectBlackmagic.RestfulClient.Test
+namespace ProjectBlackmagic.RestfulClient.Test.Authentication.Rps
 {
     [TestClass]
-    public class RpsAuthProviderTests
+    public class RpsAuthenticatorTests
     {
         private static RpsToken rpsPayloadSuccess;
         private static string rpsPayloadError;
@@ -57,7 +55,7 @@ namespace ProjectBlackmagic.RestfulClient.Test
             var authValue = authProvider.GetAuthValue().Result;
 
             // Assert
-            Assert.AreEqual($"Rps app_ticket=\"{rpsPayloadSuccess.AccessToken}\"", authValue);
+            Assert.AreEqual($"app_ticket=\"{rpsPayloadSuccess.AccessToken}\"", authValue);
         }
 
         [TestMethod]
