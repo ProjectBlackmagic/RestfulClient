@@ -28,7 +28,7 @@ namespace ProjectBlackmagic.RestfulClient.Test
         [ClassInitialize]
         public static void InitClass(TestContext context)
         {
-            payload = JsonConvert.DeserializeObject<TestObject>(File.ReadAllText("TestData\\payload.json"));
+            payload = JsonConvert.DeserializeObject<TestObject>(File.ReadAllText("TestData/payload.json"));
         }
 
         [TestMethod]
