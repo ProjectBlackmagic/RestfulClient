@@ -52,7 +52,7 @@ namespace ProjectBlackmagic.RestfulClient.Authentication
             {
                 var authValue = await authenticator.GetAuthValue();
 
-                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Authorization", authValue);
+                httpRequest.Headers.Authorization = new AuthenticationHeaderValue(authenticator.Scheme, authValue);
             }
             catch (Exception ex)
             {

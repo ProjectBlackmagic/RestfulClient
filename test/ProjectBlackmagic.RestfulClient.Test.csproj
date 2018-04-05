@@ -20,6 +20,17 @@
     <ItemGroup>
       <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
     </ItemGroup>
+    <ItemGroup>
+      <None Update="TestData\payload.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TestData\rpsPayloadError.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="TestData\rpsPayloadSuccess.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
     <PropertyGroup>
       <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
       <NoWarn>CS1591;SA1600;SA1602;$(NoWarn);SA1200;SA1124;SA1101;SA1124;SA1201;SA1202;SA1108;SA1649;SA1402</NoWarn>

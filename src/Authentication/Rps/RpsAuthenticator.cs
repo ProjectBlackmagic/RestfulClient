@@ -78,6 +78,9 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
         }
 
         /// <inheritdoc/>
+        public string Scheme => "Rps";
+
+        /// <inheritdoc/>
         public async Task<string> GetAuthValue()
         {
             RpsToken token;
@@ -117,7 +120,7 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
                 }
             }
 
-            return $"Rps app_ticket=\"{token.AccessToken}\"";
+            return $"app_ticket=\"{token.AccessToken}\"";
         }
 
         /// <inheritdoc/>

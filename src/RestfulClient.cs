@@ -275,7 +275,8 @@ namespace ProjectBlackmagic.RestfulClient
             }
             else // if result needs to be parsed
             {
-                var responseContent = await response.Content?.ReadAsStringAsync();
+                var readContentTask = response.Content?.ReadAsStringAsync() ?? Task.FromResult(string.Empty);
+                var responseContent = await readContentTask;
 
                 if (!string.IsNullOrEmpty(responseContent))
                 {

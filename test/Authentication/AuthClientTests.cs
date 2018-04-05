@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,11 +16,13 @@ using Moq;
 using Newtonsoft.Json;
 using ProjectBlackmagic.RestfulClient.Authentication;
 
-namespace ProjectBlackmagic.RestfulClient.Test
+namespace ProjectBlackmagic.RestfulClient.Test.Authentication
 {
     [TestClass]
+    [DeploymentItem("TestData/payload.json")]
     public class AuthClientTests
     {
+        private static string endpoint = "http://fakeEndpoint/test";
         private static TestObject payload;
 
         private AuthClient GetTestClient(IAuthenticator authenticator, string endpoint, HttpStatusCode httpStatusCode, object httpPayload = null)
@@ -41,150 +44,161 @@ namespace ProjectBlackmagic.RestfulClient.Test
         }
 
         [TestMethod]
-        public void AuthClientTest_AuthSucceeded()
+        public async Task GetAsync_TestRequestAndResponse()
         {
-            // Setup
-            var endpoint = "api/test_get";
-            var authProvider = new Mock<IAuthenticator>();
+            var authenticatorMock = new Mock<IAuthenticator>();
 
-            authProvider
+            authenticatorMock
+                .SetupGet(p => p.Scheme)
+                .Returns("fakeScheme");
+            authenticatorMock
                 .Setup(p => p.GetAuthValue())
-                .Returns(Task.FromResult("fakeAuthValue"));
-            authProvider
+                .ReturnsAsync("fakeAuthValue");
+            authenticatorMock
                 .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
                 .Returns(new HttpClientHandler());
 
-            var client = GetTestClient(authProvider.Object, endpoint, HttpStatusCode.OK, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
 
-            // Exec
-            var testObject = client.Get<TestObject>(endpoint);
+            var testObject = await client.GetAsync<TestObject>(endpoint);
 
-            // Assert
             Assert.IsNotNull(testObject);
-            authProvider.Verify(p => p.GetAuthValue(), Times.Once);
         }
 
         [TestMethod]
-        public void AuthClientTest_GetAuthValueFailed()
+        public async Task GetAsync_TestAuthorizationHeaderSetup()
         {
-            // Setup
-            var endpoint = "api/test_get";
-            var authProvider = new Mock<IAuthenticator>();
+            var authenticatorMock = new Mock<IAuthenticator>();
 
-            // Mock the get auth value call to be a bad request (any non-success code should work here)
-            var authResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
-            authProvider
+            authenticatorMock
+                .SetupGet(p => p.Scheme)
+                .Returns("fakeScheme");
+            authenticatorMock
                 .Setup(p => p.GetAuthValue())
-                .ThrowsAsync(new RestfulClientException("Could not get token from auth provider", authResponse));
-            authProvider
+                .ReturnsAsync("fakeAuthValue");
+            authenticatorMock
                 .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
                 .Returns(new HttpClientHandler());
 
-            var client = GetTestClient(authProvider.Object, endpoint, HttpStatusCode.OK, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
 
-            try
-            {
-                var testObject = client.Get<TestObject>(endpoint);
+            var testObject = await client.GetAsync<TestObject>(endpoint);
 
-                // Fail the test if get did not throw an exception
-                Assert.Fail();
-            }
-            catch (AggregateException ex)
-            {
-                // Top level exception is an RestfulClientException (Unauthorized) thrown by the AuthClient
-                Assert.AreEqual(typeof(RestfulClientException), ex.InnerException.GetType());
-                var authClientException = ex.InnerException as RestfulClientException;
-                Assert.AreEqual(HttpStatusCode.Unauthorized, authClientException.StatusCode);
+            Assert.AreEqual(1, messageHandler.Requests.Count);
+            var request = messageHandler.Requests.FirstOrDefault();
 
-                // Inner exception should also be a RestfulClientException (thrown by the provider's GetAuthValue)
-                Assert.AreEqual(typeof(RestfulClientException), authClientException.InnerException.GetType());
-                var responseException = authClientException.InnerException as RestfulClientException;
-                Assert.AreEqual(HttpStatusCode.BadRequest, responseException.StatusCode);
-            }
-            finally
-            {
-                authProvider.Verify(p => p.GetAuthValue(), Times.Once);
+            Assert.AreEqual("fakeScheme", request.Headers.Authorization.Scheme);
+            Assert.AreEqual("fakeAuthValue", request.Headers.Authorization.Parameter);
 
-                // Because the auth value was never successfully obtained, the token should not have been cleared
-                authProvider.Verify(p => p.ClearAuthValue(), Times.Never);
-            }
+            authenticatorMock.Verify(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()), Times.Once);
+            authenticatorMock.VerifyGet(p => p.Scheme, Times.Once);
+            authenticatorMock.Verify(p => p.GetAuthValue(), Times.Once);
         }
 
         [TestMethod]
-        public void AuthClientTest_AuthFailure()
+        public async Task GetAsync_TestAuthorizationFailed()
         {
-            // Setup
-            var endpoint = "api/test_get";
-            var authProvider = new Mock<IAuthenticator>();
+            var authValueException = new Exception("Test auth token error");
+            var authenticatorMock = new Mock<IAuthenticator>();
 
-            authProvider
+            authenticatorMock
                 .Setup(p => p.GetAuthValue())
-                .Returns(Task.FromResult("fakeAuthValue"));
-            authProvider
+                .ThrowsAsync(authValueException);
+            authenticatorMock
                 .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
                 .Returns(new HttpClientHandler());
 
-            var client = GetTestClient(authProvider.Object, endpoint, HttpStatusCode.Unauthorized, null);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
 
             try
             {
-                var testObject = client.Get<TestObject>(endpoint);
-
-                // Fail the test if get did not throw an exception
+                await client.GetAsync<TestObject>(endpoint);
                 Assert.Fail();
             }
-            catch (AggregateException ex)
+            catch (Exception ex)
             {
-                // Top level exception is an RestfulClientException re-thrown by the AuthClient
-                Assert.AreEqual(typeof(RestfulClientException), ex.InnerException.GetType());
-                var authClientException = ex.InnerException as RestfulClientException;
-                Assert.AreEqual(HttpStatusCode.Unauthorized, authClientException.StatusCode);
+                Assert.IsInstanceOfType(ex, typeof(RestfulClientException));
+                var restfulException = ex as RestfulClientException;
+
+                Assert.IsTrue(restfulException.Message.Contains("AuthClient could not obtain and/or add the authentication token"));
+                Assert.AreEqual(HttpStatusCode.Unauthorized, restfulException.StatusCode);
+                Assert.AreSame(authValueException, restfulException.InnerException);
             }
             finally
             {
-                authProvider.Verify(p => p.GetAuthValue(), Times.Once);
-
-                // Because the service call was unauthorized, the token should have been cleared
-                authProvider.Verify(p => p.ClearAuthValue(), Times.Once);
+                authenticatorMock.Verify(a => a.GetAuthValue(), Times.Once);
+                authenticatorMock.Verify(p => p.ClearAuthValue(), Times.Never);
             }
         }
 
         [TestMethod]
-        public void AuthClientTest_GetFailure()
+        public async Task GetAsync_TestRequestUnauthorized()
         {
-            // Setup
-            var endpoint = "api/test_get";
-            var authProvider = new Mock<IAuthenticator>();
+            var authenticatorMock = new Mock<IAuthenticator>();
 
-            authProvider
+            authenticatorMock
+                .SetupGet(p => p.Scheme)
+                .Returns("fakeScheme");
+            authenticatorMock
                 .Setup(p => p.GetAuthValue())
-                .Returns(Task.FromResult("fakeAuthValue"));
-            authProvider
+                .ReturnsAsync("fakeAuthValue");
+            authenticatorMock
                 .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
                 .Returns(new HttpClientHandler());
 
-            var client = GetTestClient(authProvider.Object, endpoint, HttpStatusCode.BadRequest, null);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.Unauthorized, endpoint, payload);
+            var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
 
             try
             {
-                var testObject = client.Get<TestObject>(endpoint);
-
-                // Fail the test if get did not throw an exception
+                await client.GetAsync<TestObject>(endpoint);
                 Assert.Fail();
             }
-            catch (AggregateException ex)
+            catch (Exception ex)
             {
-                // Top level exception is an RestfulClientException re-thrown by the AuthClient
-                Assert.AreEqual(typeof(RestfulClientException), ex.InnerException.GetType());
-                var authClientException = ex.InnerException as RestfulClientException;
-                Assert.AreEqual(HttpStatusCode.BadRequest, authClientException.StatusCode);
+                Assert.IsInstanceOfType(ex, typeof(RestfulClientException));
             }
             finally
             {
-                authProvider.Verify(p => p.GetAuthValue(), Times.Once);
+                authenticatorMock.Verify(a => a.GetAuthValue(), Times.Once);
+                authenticatorMock.Verify(p => p.ClearAuthValue(), Times.Once);
+            }
+        }
 
-                // Because the service call was failed for a reason other than unauthorized, the token should not have been cleared
-                authProvider.Verify(p => p.ClearAuthValue(), Times.Never);
+        [TestMethod]
+        public async Task GetAsync_TestRequestFailed()
+        {
+            var authenticatorMock = new Mock<IAuthenticator>();
+
+            authenticatorMock
+                .SetupGet(p => p.Scheme)
+                .Returns("fakeScheme");
+            authenticatorMock
+                .Setup(p => p.GetAuthValue())
+                .ReturnsAsync("fakeAuthValue");
+            authenticatorMock
+                .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
+                .Returns(new HttpClientHandler());
+
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.NotFound, endpoint, payload);
+            var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
+
+            try
+            {
+                await client.GetAsync<TestObject>(endpoint);
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(RestfulClientException));
+            }
+            finally
+            {
+                authenticatorMock.Verify(a => a.GetAuthValue(), Times.Once);
+                authenticatorMock.Verify(p => p.ClearAuthValue(), Times.Never);
             }
         }
     }
