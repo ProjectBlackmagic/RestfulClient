@@ -19,6 +19,7 @@ using ProjectBlackmagic.RestfulClient.Authentication;
 namespace ProjectBlackmagic.RestfulClient.Test.Authentication
 {
     [TestClass]
+    [DeploymentItem("TestData/payload.json")]
     public class AuthClientTests
     {
         private static string endpoint = "http://fakeEndpoint/test";

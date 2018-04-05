@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 namespace ProjectBlackmagic.RestfulClient.Test
 {
     [TestClass]
+    [DeploymentItem("TestData/payload.json")]
     public class RestfulClientTests
     {
         private static string endpoint = "http://fakeEndpoint/test";

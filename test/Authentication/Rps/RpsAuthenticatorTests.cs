@@ -18,6 +18,9 @@ using ProjectBlackmagic.RestfulClient.Authentication.Rps;
 namespace ProjectBlackmagic.RestfulClient.Test.Authentication.Rps
 {
     [TestClass]
+    [DeploymentItem("TestData/payload.json")]
+    [DeploymentItem("TestData/rpsPayloadSuccess.json")]
+    [DeploymentItem("TestData/rpsPayloadError.json")]
     public class RpsAuthenticatorTests
     {
         private static RpsToken rpsPayloadSuccess;
