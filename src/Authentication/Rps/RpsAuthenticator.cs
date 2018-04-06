@@ -11,6 +11,7 @@ using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
 {
@@ -96,7 +97,8 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
                     try
                     {
                         // Perform the request for the token
-                        token = await tokenClient.PostAsync<RpsToken>(string.Empty, QueryString, null, ContentType.UrlEncodedForm);
+                        var content = new FormUrlEncodedStringContent(QueryString);
+                        token = await tokenClient.PostAsync<RpsToken>(string.Empty, content, null);
 
                         // Expire the token in the cache before the token actually expires, to be safe
                         var earlyExpiry = token.ExpiresIn * 0.95;

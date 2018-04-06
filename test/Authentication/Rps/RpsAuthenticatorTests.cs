@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using ProjectBlackmagic.RestfulClient.Authentication;
 using ProjectBlackmagic.RestfulClient.Authentication.Rps;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Test.Authentication.Rps
 {
@@ -24,10 +25,10 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication.Rps
     public class RpsAuthenticatorTests
     {
         private static RpsToken rpsPayloadSuccess;
-        private static string rpsPayloadError;
+        private static RpsException rpsPayloadError;
         private static TestObject payload;
 
-        private IAuthenticator GetTestAuthenticator(HttpStatusCode rpsStatusCode, object rpsPayload)
+        private IAuthenticator GetTestAuthenticator(HttpStatusCode rpsStatusCode, HttpContent rpsPayloadContent)
         {
             var authHost = "http://fakeAuthUrl";
             var config = new RpsConfig(authHost, "fakeSiteID", "fakeScope", "fakePolicy", new X509Certificate2());
@@ -35,7 +36,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication.Rps
             var rpsMessageHandler = new HttpClientHandler();
             var rpsDelegatingHandlers = new DelegatingHandler[]
             {
-                FakeResponseHandler.Create(rpsStatusCode, authHost, rpsPayload)
+                FakeResponseHandler.Create(rpsStatusCode, authHost, rpsPayloadContent)
             };
             return new RpsAuthenticator(config, rpsMessageHandler, rpsDelegatingHandlers);
         }
@@ -44,7 +45,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication.Rps
         public static void RpsTest_InitClass(TestContext context)
         {
             rpsPayloadSuccess = JsonConvert.DeserializeObject<RpsToken>(File.ReadAllText("TestData/rpsPayloadSuccess.json"));
-            rpsPayloadError = File.ReadAllText("TestData/rpsPayloadError.json");
+            rpsPayloadError = JsonConvert.DeserializeObject<RpsException>(File.ReadAllText("TestData/rpsPayloadError.json"));
             payload = JsonConvert.DeserializeObject<TestObject>(File.ReadAllText("TestData/payload.json"));
         }
 
@@ -52,7 +53,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication.Rps
         public void RpsAuthProviderTest_AuthSucceeded()
         {
             // Setup
-            var authProvider = GetTestAuthenticator(HttpStatusCode.OK, rpsPayloadSuccess);
+            var authProvider = GetTestAuthenticator(HttpStatusCode.OK, new JsonContent<RpsToken>(rpsPayloadSuccess));
 
             // Exec
             var authValue = authProvider.GetAuthValue().Result;
@@ -65,7 +66,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication.Rps
         public void RpsAuthProviderTest_AuthFailed()
         {
             // Setup
-            var authProvider = GetTestAuthenticator(HttpStatusCode.BadRequest, rpsPayloadError);
+            var authProvider = GetTestAuthenticator(HttpStatusCode.BadRequest, new JsonContent<RpsException>(rpsPayloadError));
 
             try
             {

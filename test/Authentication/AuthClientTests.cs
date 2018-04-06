@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using ProjectBlackmagic.RestfulClient.Authentication;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Test.Authentication
 {
@@ -25,17 +26,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
         private static string endpoint = "http://fakeEndpoint/test";
         private static TestObject payload;
 
-        private AuthClient GetTestClient(IAuthenticator authenticator, string endpoint, HttpStatusCode httpStatusCode, object httpPayload = null)
-        {
-            var host = "http://fakeEndpoint";
-            var clientHandler = new HttpClientHandler();
-            var delegatingHandlers = new DelegatingHandler[]
-            {
-                FakeResponseHandler.Create(httpStatusCode, host + "/" + endpoint, httpPayload)
-            };
-
-            return new AuthClient(authenticator, host, clientHandler, delegatingHandlers);
-        }
+        private static JsonContent<TestObject> TestContent => new JsonContent<TestObject>(payload);
 
         [ClassInitialize]
         public static void AuthClientTest_InitClass(TestContext context)
@@ -58,7 +49,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
                 .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
                 .Returns(new HttpClientHandler());
 
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, TestContent);
             var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
 
             var testObject = await client.GetAsync<TestObject>(endpoint);
@@ -81,7 +72,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
                 .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
                 .Returns(new HttpClientHandler());
 
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, TestContent);
             var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
 
             var testObject = await client.GetAsync<TestObject>(endpoint);
@@ -110,7 +101,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
                 .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
                 .Returns(new HttpClientHandler());
 
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, TestContent);
             var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
 
             try
@@ -149,7 +140,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
                 .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
                 .Returns(new HttpClientHandler());
 
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.Unauthorized, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.Unauthorized, endpoint, TestContent);
             var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
 
             try
@@ -183,7 +174,7 @@ namespace ProjectBlackmagic.RestfulClient.Test.Authentication
                 .Setup(p => p.EnhanceClientHandler(It.IsAny<HttpClientHandler>()))
                 .Returns(new HttpClientHandler());
 
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.NotFound, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.NotFound, endpoint, TestContent);
             var client = new AuthClient(authenticatorMock.Object, endpoint, new HttpClientHandler(), messageHandler);
 
             try

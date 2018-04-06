@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Test
 {
@@ -25,6 +26,8 @@ namespace ProjectBlackmagic.RestfulClient.Test
         private static KeyValuePair<string, string> testHeader = new KeyValuePair<string, string>("TestHeader", "TestValue");
         private static TestObject payload;
 
+        private static JsonContent<TestObject> TestContent => new JsonContent<TestObject>(payload);
+
         [ClassInitialize]
         public static void InitClass(TestContext context)
         {
@@ -34,7 +37,7 @@ namespace ProjectBlackmagic.RestfulClient.Test
         [TestMethod]
         public async Task GetAsync_TestRequestAndResponse()
         {
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, TestContent);
             var client = new RestfulClient(endpoint, messageHandler);
 
             var testObject = await client.GetAsync<TestObject>(endpoint);
@@ -52,10 +55,10 @@ namespace ProjectBlackmagic.RestfulClient.Test
         [TestMethod]
         public async Task PostAsync_TestRequestAndResponse()
         {
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, TestContent);
             var client = new RestfulClient(endpoint, messageHandler);
 
-            var testObject = await client.PostAsync<TestObject>(endpoint, payload);
+            var testObject = await client.PostAsync<TestObject>(endpoint, TestContent);
 
             Assert.IsNotNull(testObject);
             Assert.AreEqual(1, messageHandler.Requests.Count);
@@ -70,10 +73,10 @@ namespace ProjectBlackmagic.RestfulClient.Test
         [TestMethod]
         public async Task PutAsync_TestRequestAndResponse()
         {
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, TestContent);
             var client = new RestfulClient(endpoint, messageHandler);
 
-            var testObject = await client.PutAsync<TestObject>(endpoint, payload);
+            var testObject = await client.PutAsync<TestObject>(endpoint, TestContent);
 
             Assert.IsNotNull(testObject);
             Assert.AreEqual(1, messageHandler.Requests.Count);
@@ -88,10 +91,10 @@ namespace ProjectBlackmagic.RestfulClient.Test
         [TestMethod]
         public async Task PatchAsync_TestRequestAndResponse()
         {
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, TestContent);
             var client = new RestfulClient(endpoint, messageHandler);
 
-            var testObject = await client.PatchAsync<TestObject>(endpoint, payload);
+            var testObject = await client.PatchAsync<TestObject>(endpoint, TestContent);
 
             Assert.IsNotNull(testObject);
             Assert.AreEqual(1, messageHandler.Requests.Count);
@@ -106,7 +109,7 @@ namespace ProjectBlackmagic.RestfulClient.Test
         [TestMethod]
         public async Task DeleteAsync_TestRequestAndResponse()
         {
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, TestContent);
             var client = new RestfulClient(endpoint, messageHandler);
 
             var testObject = await client.DeleteAsync<TestObject>(endpoint);
@@ -124,7 +127,7 @@ namespace ProjectBlackmagic.RestfulClient.Test
         [TestMethod]
         public async Task GetAsync_TestAdditionalRequestHeaders()
         {
-            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, TestContent);
             var client = new RestfulClient(endpoint, messageHandler);
             var headers = new Dictionary<string, string>()
             {
