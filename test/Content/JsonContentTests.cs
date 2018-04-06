@@ -1,4 +1,4 @@
-﻿// <copyright file="JsonContentSerializerTests.cs" company="ProjectBlackmagic">
+﻿// <copyright file="JsonContentTests.cs" company="ProjectBlackmagic">
 // RestfulClient
 // Copyright (c) ProjectBlackmagic. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
@@ -7,16 +7,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using ProjectBlackmagic.RestfulClient.ContentSerialization;
+using ProjectBlackmagic.RestfulClient.Content;
 
-namespace ProjectBlackmagic.RestfulClient.Test.ContentSerialization
+namespace ProjectBlackmagic.RestfulClient.Test.Content
 {
     [TestClass]
-    public class JsonContentSerializerTests
+    public class JsonContentTests
     {
         private static TestObject testObject;
 
@@ -41,31 +40,19 @@ namespace ProjectBlackmagic.RestfulClient.Test.ContentSerialization
         }
 
         [TestMethod]
-        public void Serialize_TestContentTypeHeader()
+        public void Content_TestMediaTypeHeader()
         {
-            var contentSerializer = new JsonContentSerializer<TestObject>();
-            var content = contentSerializer.Serialize(testObject);
+            var content = new JsonContent<TestObject>(testObject);
 
             Assert.AreEqual("application/json", content.Headers.ContentType.MediaType);
         }
 
         [TestMethod]
-        public void Serialize_TestSerializedContentType()
+        public void Content_TestNull()
         {
-            var contentSerializer = new JsonContentSerializer<TestObject>();
-            var content = contentSerializer.Serialize(testObject);
-
-            Assert.IsInstanceOfType(content, typeof(StringContent));
-        }
-
-        [TestMethod]
-        public void Serialize_TestNullContent()
-        {
-            var contentSerializer = new JsonContentSerializer<TestObject>();
-
             try
             {
-                contentSerializer.Serialize(null);
+                new JsonContent<TestObject>(null);
                 Assert.Fail();
             }
             catch (ArgumentNullException ex)
@@ -75,35 +62,32 @@ namespace ProjectBlackmagic.RestfulClient.Test.ContentSerialization
         }
 
         [TestMethod]
-        public async Task Serialize_TestEmptyObjectContent()
+        public async Task Content_TestEmptyObject()
         {
-            var contentSerializer = new JsonContentSerializer<TestObject>();
-            var content = contentSerializer.Serialize(new TestObject());
+            var content = new JsonContent<TestObject>(new TestObject());
             var contentString = await content.ReadAsStringAsync();
 
             Assert.AreEqual("{\"Guid\":\"00000000-0000-0000-0000-000000000000\",\"IsActive\":false,\"Age\":0}", contentString);
         }
 
         [TestMethod]
-        public async Task Serialize_TestSimpleContent()
+        public async Task Content_TestSimpleObject()
         {
-            var contentSerializer = new JsonContentSerializer<TestObject>();
-            var content = contentSerializer.Serialize(testObject);
+            var content = new JsonContent<TestObject>(testObject);
             var contentString = await content.ReadAsStringAsync();
 
             Assert.AreEqual("{\"Guid\":\"00000000-0000-0000-0000-000000000000\",\"IsActive\":false,\"Age\":0,\"Name\":\"TestName\",\"Tags\":[\"first\",\"second\"],\"Friends\":[{\"Id\":1,\"Name\":\"TestSubName\"}]}", contentString);
         }
 
         [TestMethod]
-        public async Task Serialize_TestCustomSerializerSettings()
+        public async Task Content_TestCustomSerializerSettings()
         {
             var customSettings = new JsonSerializerSettings()
             {
                 NullValueHandling = NullValueHandling.Include,
             };
 
-            var contentSerializer = new JsonContentSerializer<TestObject>(customSettings);
-            var content = contentSerializer.Serialize(testObject);
+            var content = new JsonContent<TestObject>(testObject, customSettings);
             var contentString = await content.ReadAsStringAsync();
 
             Assert.AreEqual("{\"Guid\":\"00000000-0000-0000-0000-000000000000\",\"IsActive\":false,\"Age\":0,\"EyeColor\":null,\"Name\":\"TestName\",\"Gender\":null,\"Email\":null,\"About\":null,\"Tags\":[\"first\",\"second\"],\"Friends\":[{\"Id\":1,\"Name\":\"TestSubName\"}]}", contentString);

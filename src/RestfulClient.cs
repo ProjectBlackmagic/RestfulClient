@@ -13,7 +13,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using ProjectBlackmagic.RestfulClient.ContentSerialization;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient
 {
@@ -276,9 +276,17 @@ namespace ProjectBlackmagic.RestfulClient
             }
             else // if result needs to be parsed
             {
-                var contentSerializer = new JsonContentSerializer<T>();
+                var readContentTask = response.Content?.ReadAsStringAsync() ?? Task.FromResult(string.Empty);
+                var responseContent = await readContentTask;
 
-                return await contentSerializer.Deserialize(response.Content);
+                if (!string.IsNullOrEmpty(responseContent))
+                {
+                    return JsonConvert.DeserializeObject<T>(responseContent);
+                }
+                else
+                {
+                    return default(T);
+                }
             }
         }
 

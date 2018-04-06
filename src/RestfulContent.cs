@@ -8,12 +8,12 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using ProjectBlackmagic.RestfulClient.ContentSerialization;
+using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient
 {
     /// <summary>
-    /// Types of content supported by <see cref="RestfulContent"/> serializer.
+    /// Types of content supported by <see cref="Content"/> serializer.
     /// </summary>
     public enum ContentType
     {
@@ -48,9 +48,7 @@ namespace ProjectBlackmagic.RestfulClient
             {
                 case ContentType.JSON:
                     {
-                        var contentSerializer = new JsonContentSerializer<object>();
-
-                        httpContent = contentSerializer.Serialize(content);
+                        httpContent = new JsonContent<object>(content);
 
                         break;
                     }
@@ -62,17 +60,13 @@ namespace ProjectBlackmagic.RestfulClient
                         {
                             var stringContent = (string)content;
 
-                            var contentSerializer = new UrlFormStringContentSerializer();
-
-                            httpContent = contentSerializer.Serialize(stringContent);
+                            httpContent = new FormUrlEncodedStringContent(stringContent);
                         }
                         else if (t.Equals(typeof(Dictionary<string, string>)))
                         {
                             var formContent = (Dictionary<string, string>)content;
 
-                            var contentSerializer = new UrlFormDictionaryContentSerializer();
-
-                            httpContent = contentSerializer.Serialize(formContent);
+                            httpContent = new FormUrlEncodedContent(formContent);
                         }
                         else
                         {
