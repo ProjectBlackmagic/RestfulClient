@@ -142,6 +142,28 @@ namespace ProjectBlackmagic.RestfulClient.Test
             Assert.AreEqual(testHeader.Value, testHeaderValues.FirstOrDefault());
         }
 
+        [TestMethod]
+        public async Task GetAsync_TestDefaultHeader()
+        {
+            var messageHandler = FakeResponseHandler.Create(HttpStatusCode.OK, endpoint, payload);
+            var headers = new Dictionary<string, string>()
+            {
+                { testHeader.Key, testHeader.Value }
+            };
+
+            var client = new RestfulClient(endpoint, headers, messageHandler);
+
+            var testObject = await client.GetAsync<TestObject>(endpoint);
+
+            var request = messageHandler.Requests.FirstOrDefault();
+
+            Assert.IsTrue(request.Headers.Contains(testHeader.Key));
+
+            var testHeaderValues = request.Headers.GetValues(testHeader.Key);
+            Assert.AreEqual(1, testHeaderValues.Count());
+            Assert.AreEqual(testHeader.Value, testHeaderValues.FirstOrDefault());
+        }
+
         // TO-DO: In practice, RestfulClient fails with null header value
         /*
         [TestMethod]
