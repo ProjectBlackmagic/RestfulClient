@@ -32,6 +32,11 @@ namespace ProjectBlackmagic.RestfulClient
         public HttpClient Client { get; set; }
 
         /// <summary>
+        /// Gets or sets a collection of headers that will be added by default to every outgoing request.
+        /// </summary>
+        protected Dictionary<string, string> DefaultHeaders { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="RestfulClient"/> class.
         /// Base constructor.
         /// </summary>
@@ -40,6 +45,18 @@ namespace ProjectBlackmagic.RestfulClient
         {
             BaseUrl = new Uri(apiEndpoint);
             Client = new HttpClient();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RestfulClient"/> class.
+        /// Base constructor.
+        /// </summary>
+        /// <param name="apiEndpoint">Base endpoint URL(prefix).</param>
+        /// <param name="defaultHeaders">Collection of headers to be added to all request</param>
+        public RestfulClient(string apiEndpoint, Dictionary<string, string> defaultHeaders)
+            : this(apiEndpoint)
+        {
+            DefaultHeaders = defaultHeaders;
         }
 
         /// <summary>
@@ -56,6 +73,19 @@ namespace ProjectBlackmagic.RestfulClient
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RestfulClient"/> class.
+        /// Constructor with custom message handler.
+        /// </summary>
+        /// <param name="apiEndpoint">Base endpoint URL(prefix).</param>
+        /// <param name="defaultHeaders">Collection of headers to be added to all request</param>
+        /// <param name="messageHandler">Custom message handler.</param>
+        public RestfulClient(string apiEndpoint, Dictionary<string, string> defaultHeaders, HttpMessageHandler messageHandler)
+            : this(apiEndpoint, messageHandler)
+        {
+            DefaultHeaders = defaultHeaders;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RestfulClient"/> class.
         /// Constructor with custom message handler and additional delegating handlers.
         /// </summary>
         /// <param name="apiEndpoint">Base endpoint URL(prefix).</param>
@@ -67,69 +97,47 @@ namespace ProjectBlackmagic.RestfulClient
             Client = CreateClient(messageHandler, delegatingHandlers);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RestfulClient"/> class.
+        /// Constructor with custom message handler and additional delegating handlers.
+        /// </summary>
+        /// <param name="apiEndpoint">Base endpoint URL(prefix).</param>
+        /// <param name="defaultHeaders">Collection of headers to be added to all request</param>
+        /// <param name="messageHandler">Custom message handler.</param>
+        /// <param name="delegatingHandlers">Custom delegating handlers.</param>
+        public RestfulClient(string apiEndpoint, Dictionary<string, string> defaultHeaders, HttpMessageHandler messageHandler, params DelegatingHandler[] delegatingHandlers)
+            : this(apiEndpoint, messageHandler, delegatingHandlers)
+        {
+            DefaultHeaders = defaultHeaders;
+        }
+
         #region Sync Methods
 
-        /// <summary>
-        /// Performs HTTP Get method
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public T Get<T>(string action, Dictionary<string, string> headers = null)
         {
             return Task.Run(() => GetAsync<T>(action, headers)).Result;
         }
 
-        /// <summary>
-        /// Performs HTTP Post method
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="content">Content object to be serialized as request body.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public T Post<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON)
         {
             return Task.Run(() => PostAsync<T>(action, content, headers, contentType)).Result;
         }
 
-        /// <summary>
-        /// Performs HTTP Put method
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="content">Content object to be serialized as request body.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public T Put<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON)
         {
             return Task.Run(() => PutAsync<T>(action, content, headers, contentType)).Result;
         }
 
-        /// <summary>
-        /// Performs HTTP Patch method
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="content">Content object to be serialized as request body.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public T Patch<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON)
         {
             return Task.Run(() => PatchAsync<T>(action, content, headers, contentType)).Result;
         }
 
-        /// <summary>
-        /// Performs HTTP Delete method
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public T Delete<T>(string action, Dictionary<string, string> headers = null)
         {
             return Task.Run(() => DeleteAsync<T>(action, headers)).Result;
@@ -139,28 +147,14 @@ namespace ProjectBlackmagic.RestfulClient
 
         #region Async Methods
 
-        /// <summary>
-        /// Performs HTTP Get method (async)
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public async Task<T> GetAsync<T>(string action, Dictionary<string, string> headers = null)
         {
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, BuildUri(action));
             return await PerformRequestAsync<T>(httpRequest, headers);
         }
 
-        /// <summary>
-        /// Performs HTTP Post method (async)
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="content">Content object to be serialized as request body.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public async Task<T> PostAsync<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON)
         {
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, BuildUri(action))
@@ -170,15 +164,7 @@ namespace ProjectBlackmagic.RestfulClient
             return await PerformRequestAsync<T>(httpRequest, headers);
         }
 
-        /// <summary>
-        /// Performs HTTP Put method (async)
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="content">Content object to be serialized as request body.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public async Task<T> PutAsync<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON)
         {
             var httpRequest = new HttpRequestMessage(HttpMethod.Put, BuildUri(action))
@@ -188,15 +174,7 @@ namespace ProjectBlackmagic.RestfulClient
             return await PerformRequestAsync<T>(httpRequest, headers);
         }
 
-        /// <summary>
-        /// Performs HTTP Patch method (async)
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="content">Content object to be serialized as request body.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <param name="contentType">Content type of the payload.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public async Task<T> PatchAsync<T>(string action, object content, Dictionary<string, string> headers = null, ContentType contentType = ContentType.JSON)
         {
             var method = new HttpMethod("PATCH");
@@ -207,13 +185,7 @@ namespace ProjectBlackmagic.RestfulClient
             return await PerformRequestAsync<T>(httpRequest, headers);
         }
 
-        /// <summary>
-        /// Performs HTTP Delete method (async)
-        /// </summary>
-        /// <param name="action">URL action value. It will be concatenated with base URL to create request URL.</param>
-        /// <param name="headers">HTTP headers to be included in the request.</param>
-        /// <typeparam name="T">The type to use when deserializing the response. Use type <see cref="Empty" /> if the response is not expected to have a body.</typeparam>
-        /// <returns>Deserialized to type T object from response body.</returns>
+        /// <inheritdoc/>
         public async Task<T> DeleteAsync<T>(string action, Dictionary<string, string> headers = null)
         {
             var httpRequest = new HttpRequestMessage(HttpMethod.Delete, BuildUri(action));
@@ -232,24 +204,36 @@ namespace ProjectBlackmagic.RestfulClient
         /// <returns>Response.</returns>
         protected virtual async Task<T> PerformRequestAsync<T>(HttpRequestMessage httpRequest, Dictionary<string, string> headers = null)
         {
+            // Let's assume that default headers should go first in this list and that they are immutable.
+            // HTTP allowes usage of duplicates but it doesn't say anything about how they should be handled.
+            // Also, we could theoretically override existing default header with the value from request if such
+            // exists, however I think that should be to big of assumption.
+            var requestHeaders = new List<KeyValuePair<string, string>>();
+            if (DefaultHeaders != null)
+            {
+                requestHeaders.AddRange(DefaultHeaders);
+            }
+
             if (headers != null)
             {
-                foreach (var header in headers)
-                {
-                    try
-                    {
-                        httpRequest.Headers.Add(header.Key, header.Value);
-                    }
-                    catch (Exception ex)
-                    {
-                        var message = string.Format(
-                                "Error adding header \"{0}\" with value \"{1}\" to outgoing request to \"{2}\". Check for null-value.",
-                                header.Key,
-                                header.Value,
-                                httpRequest.RequestUri);
+                requestHeaders.AddRange(headers);
+            }
 
-                        throw new RestfulClientException(message, httpRequest, HttpStatusCode.InternalServerError, ex);
-                    }
+            foreach (var header in requestHeaders)
+            {
+                try
+                {
+                    httpRequest.Headers.Add(header.Key, header.Value);
+                }
+                catch (Exception ex)
+                {
+                    var message = string.Format(
+                            "Error adding header \"{0}\" with value \"{1}\" to outgoing request to \"{2}\". Check for null-value.",
+                            header.Key,
+                            header.Value,
+                            httpRequest.RequestUri);
+
+                    throw new RestfulClientException(message, httpRequest, HttpStatusCode.InternalServerError, ex);
                 }
             }
 
