@@ -5,17 +5,19 @@
 // Github: https://github.com/ProjectBlackmagic/RestfulClient.
 // </copyright>
 
+using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace ProjectBlackmagic.RestfulClient.ContentSerialization
 {
     /// <summary>
-    /// JsonContentSerializer defines how to serialize and deserialize JSON content.
+    /// JsonContentSerializer defines how to serialize and deserialize JSON content from a class object.
     /// </summary>
     /// <typeparam name="T">Type of content being serialized</typeparam>
     public class JsonContentSerializer<T> : IContentSerializer<T>
+        where T : class
     {
         private readonly JsonSerializerSettings serializerSettings;
 
@@ -39,18 +41,20 @@ namespace ProjectBlackmagic.RestfulClient.ContentSerialization
         /// /// <param name="serializerSettings">Custom serializer settings.</param>
         public JsonContentSerializer(JsonSerializerSettings serializerSettings)
         {
-            this.serializerSettings = serializerSettings;
+            this.serializerSettings = serializerSettings ?? throw new ArgumentNullException("serializerSettings");
         }
 
         /// <inheritdoc/>
         public HttpContent Serialize(T content)
         {
+            if (content == null)
+            {
+                throw new ArgumentNullException("content");
+            }
+
             var serializedObject = JsonConvert.SerializeObject(content, this.serializerSettings);
 
-            var httpContent = new StringContent(serializedObject);
-            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-            return httpContent;
+            return new StringContent(serializedObject, Encoding.UTF8, "application/json");
         }
     }
 }

@@ -5,8 +5,9 @@
 // Github: https://github.com/ProjectBlackmagic/RestfulClient.
 // </copyright>
 
+using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Text;
 
 namespace ProjectBlackmagic.RestfulClient.ContentSerialization
 {
@@ -18,10 +19,16 @@ namespace ProjectBlackmagic.RestfulClient.ContentSerialization
         /// <inheritdoc/>
         public HttpContent Serialize(string content)
         {
-            var httpContent = new StringContent(content);
-            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+            if (content == null)
+            {
+                throw new ArgumentNullException("content");
+            }
 
-            return httpContent;
+            var normalizedContent = string.IsNullOrWhiteSpace(content)
+                ? string.Empty
+                : content;
+
+            return new StringContent(normalizedContent, Encoding.UTF8, "application/x-www-form-urlencoded");
         }
     }
 }

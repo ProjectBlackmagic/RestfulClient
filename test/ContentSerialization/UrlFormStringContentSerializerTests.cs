@@ -5,6 +5,7 @@
 // Github: https://github.com/ProjectBlackmagic/RestfulClient.
 // </copyright>
 
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,6 +32,32 @@ namespace ProjectBlackmagic.RestfulClient.Test.ContentSerialization
             var content = contentSerializer.Serialize("testContent");
 
             Assert.IsInstanceOfType(content, typeof(StringContent));
+        }
+
+        [TestMethod]
+        public void Serialize_TestNullContent()
+        {
+            var contentSerializer = new UrlFormStringContentSerializer();
+
+            try
+            {
+                contentSerializer.Serialize(null);
+                Assert.Fail();
+            }
+            catch (ArgumentNullException ex)
+            {
+                Assert.AreEqual("content", ex.ParamName);
+            }
+        }
+
+        [TestMethod]
+        public async Task Serialize_TestWhitespaceContent()
+        {
+            var contentSerializer = new UrlFormStringContentSerializer();
+            var content = contentSerializer.Serialize("    ");
+            var contentString = await content.ReadAsStringAsync();
+
+            Assert.AreEqual(string.Empty, contentString);
         }
 
         [TestMethod]

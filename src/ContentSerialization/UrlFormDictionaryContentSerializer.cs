@@ -5,6 +5,7 @@
 // Github: https://github.com/ProjectBlackmagic/RestfulClient.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 
@@ -18,6 +19,11 @@ namespace ProjectBlackmagic.RestfulClient.ContentSerialization
         /// <inheritdoc/>
         public HttpContent Serialize(Dictionary<string, string> content)
         {
+            if (content == null)
+            {
+                throw new ArgumentNullException("content");
+            }
+
             return new FormUrlEncodedContent(content);
         }
     }

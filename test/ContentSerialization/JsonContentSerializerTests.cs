@@ -59,6 +59,32 @@ namespace ProjectBlackmagic.RestfulClient.Test.ContentSerialization
         }
 
         [TestMethod]
+        public void Serialize_TestNullContent()
+        {
+            var contentSerializer = new JsonContentSerializer<TestObject>();
+
+            try
+            {
+                contentSerializer.Serialize(null);
+                Assert.Fail();
+            }
+            catch (ArgumentNullException ex)
+            {
+                Assert.AreEqual("content", ex.ParamName);
+            }
+        }
+
+        [TestMethod]
+        public async Task Serialize_TestEmptyObjectContent()
+        {
+            var contentSerializer = new JsonContentSerializer<TestObject>();
+            var content = contentSerializer.Serialize(new TestObject());
+            var contentString = await content.ReadAsStringAsync();
+
+            Assert.AreEqual("{\"Guid\":\"00000000-0000-0000-0000-000000000000\",\"IsActive\":false,\"Age\":0}", contentString);
+        }
+
+        [TestMethod]
         public async Task Serialize_TestSimpleContent()
         {
             var contentSerializer = new JsonContentSerializer<TestObject>();
