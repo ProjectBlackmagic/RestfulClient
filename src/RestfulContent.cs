@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using ProjectBlackmagic.RestfulClient.ContentSerialization;
 
 namespace ProjectBlackmagic.RestfulClient
 {
@@ -49,13 +50,9 @@ namespace ProjectBlackmagic.RestfulClient
             {
                 case ContentType.JSON:
                     {
-                        httpContent = new StringContent(
-                            JsonConvert.SerializeObject(
-                                content,
-                                Formatting.None,
-                                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+                        var contentSerializer = new JsonContentSerializer<object>();
 
-                        httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                        httpContent = contentSerializer.Serialize(content);
 
                         break;
                     }
@@ -66,13 +63,18 @@ namespace ProjectBlackmagic.RestfulClient
                         if (t.Equals(typeof(string)))
                         {
                             var stringContent = (string)content;
-                            httpContent = new StringContent(stringContent);
-                            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+                            var contentSerializer = new UrlFormStringContentSerializer();
+
+                            httpContent = contentSerializer.Serialize(stringContent);
                         }
                         else if (t.Equals(typeof(Dictionary<string, string>)))
                         {
                             var formContent = (Dictionary<string, string>)content;
-                            httpContent = new FormUrlEncodedContent(formContent);
+
+                            var contentSerializer = new UrlFormDictionaryContentSerializer();
+
+                            httpContent = contentSerializer.Serialize(formContent);
                         }
                         else
                         {
