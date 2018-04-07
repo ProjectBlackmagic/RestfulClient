@@ -6,6 +6,7 @@
 // </copyright>
 
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ProjectBlackmagic.RestfulClient.ContentSerialization
 {
@@ -18,8 +19,15 @@ namespace ProjectBlackmagic.RestfulClient.ContentSerialization
         /// <summary>
         /// Serializes content of type <typeparamref name="T"/> to type <see cref="HttpContent"/>.
         /// </summary>
-        /// <param name="content">Content</param>
-        /// <returns>Deserialized content</returns>
+        /// <param name="content">Content to serialize</param>
+        /// <returns>Serialized content</returns>
         HttpContent Serialize(T content);
+
+        /// <summary>
+        /// Deserializes content of type <see cref="HttpContent"/> to type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="content">Content to deserialize</param>
+        /// <returns>Deserialized content</returns>
+        Task<T> Deserialize(HttpContent content);
     }
 }

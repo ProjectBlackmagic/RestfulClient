@@ -8,6 +8,7 @@
 using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ProjectBlackmagic.RestfulClient.ContentSerialization
 {
@@ -29,6 +30,12 @@ namespace ProjectBlackmagic.RestfulClient.ContentSerialization
                 : content;
 
             return new StringContent(normalizedContent, Encoding.UTF8, "application/x-www-form-urlencoded");
+        }
+
+        /// <inheritdoc/>
+        public Task<string> Deserialize(HttpContent content)
+        {
+            throw new NotImplementedException();
         }
     }
 }

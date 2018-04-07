@@ -8,6 +8,7 @@
 using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace ProjectBlackmagic.RestfulClient.ContentSerialization
@@ -17,7 +18,6 @@ namespace ProjectBlackmagic.RestfulClient.ContentSerialization
     /// </summary>
     /// <typeparam name="T">Type of content being serialized</typeparam>
     public class JsonContentSerializer<T> : IContentSerializer<T>
-        where T : class
     {
         private readonly JsonSerializerSettings serializerSettings;
 
@@ -55,6 +55,32 @@ namespace ProjectBlackmagic.RestfulClient.ContentSerialization
             var serializedObject = JsonConvert.SerializeObject(content, this.serializerSettings);
 
             return new StringContent(serializedObject, Encoding.UTF8, "application/json");
+        }
+
+        /// <inheritdoc/>
+        public async Task<T> Deserialize(HttpContent content)
+        {
+            if (content == null)
+            {
+                throw new ArgumentNullException("content");
+            }
+
+            if (content.Headers.ContentType.MediaType == "application/json")
+            {
+                Mime.Html
+            }
+
+            var readContentTask = content?.ReadAsStringAsync() ?? Task.FromResult(string.Empty);
+            var responseContent = await readContentTask;
+
+            if (string.IsNullOrEmpty(responseContent))
+            {
+                return default(T);
+            }
+            else
+            {
+                return JsonConvert.DeserializeObject<T>(responseContent);
+            }
         }
     }
 }

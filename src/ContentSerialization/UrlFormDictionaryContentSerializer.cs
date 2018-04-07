@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ProjectBlackmagic.RestfulClient.ContentSerialization
 {
@@ -25,6 +26,12 @@ namespace ProjectBlackmagic.RestfulClient.ContentSerialization
             }
 
             return new FormUrlEncodedContent(content);
+        }
+
+        /// <inheritdoc/>
+        public Task<Dictionary<string, string>> Deserialize(HttpContent content)
+        {
+            throw new NotImplementedException();
         }
     }
 }
