@@ -15,8 +15,15 @@ namespace ProjectBlackmagic.RestfulClient.Content
     /// </summary>
     public class FormUrlEncodedStringContent : StringContent
     {
-        private static readonly Encoding StringEncoding = Encoding.UTF8;
-        private static readonly string MediaType = "application/x-www-form-urlencoded";
+        /// <summary>
+        /// Defines the string encoding for the content
+        /// </summary>
+        public static readonly Encoding StringEncoding = Encoding.UTF8;
+
+        /// <summary>
+        /// Defines the media type for the content
+        /// </summary>
+        public static readonly string MediaType = "application/x-www-form-urlencoded";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormUrlEncodedStringContent"/> class.

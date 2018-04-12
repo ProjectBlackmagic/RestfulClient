@@ -18,8 +18,15 @@ namespace ProjectBlackmagic.RestfulClient.Content
     /// <typeparam name="T">Type of object being serialized</typeparam>
     public class JsonContent<T> : StringContent
     {
-        private static readonly Encoding StringEncoding = Encoding.UTF8;
-        private static readonly string MediaType = "application/json";
+        /// <summary>
+        /// Defines the string encoding for the content
+        /// </summary>
+        public static readonly Encoding StringEncoding = Encoding.UTF8;
+
+        /// <summary>
+        /// Defines the media type for the content
+        /// </summary>
+        public static readonly string MediaType = "application/json";
 
         private static readonly JsonSerializerSettings DefaultSerializerSettings = new JsonSerializerSettings()
         {
