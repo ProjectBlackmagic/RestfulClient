@@ -6,12 +6,12 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using ProjectBlackmagic.RestfulClient.Content;
 
 namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
 {
@@ -33,7 +33,12 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
         /// <summary>
         /// Gets the query string used in RPS (Live ID) requests.
         /// </summary>
-        public string QueryString => $"grant_type=client_credentials&client_id={Config.SiteId}&scope={ServiceScope}";
+        public Dictionary<string, string> QueryString => new Dictionary<string, string>()
+        {
+            { "grant_type", "client_credentials" },
+            { "client_id", Config.SiteId },
+            { "scope", ServiceScope }
+        };
 
         /// <summary>
         /// Gets the service scope used in RPS (Live ID) requests.
@@ -97,7 +102,7 @@ namespace ProjectBlackmagic.RestfulClient.Authentication.Rps
                     try
                     {
                         // Perform the request for the token
-                        var content = new FormUrlEncodedStringContent(QueryString);
+                        var content = new FormUrlEncodedContent(QueryString);
                         token = await tokenClient.PostAsync<RpsToken>(string.Empty, content, null);
 
                         // Expire the token in the cache before the token actually expires, to be safe
