@@ -171,11 +171,7 @@ namespace ProjectBlackmagic.RestfulClient
                     }
                     catch (Exception ex)
                     {
-                        var message = string.Format(
-                                "Error adding header \"{0}\" with value \"{1}\" to outgoing request to \"{2}\". Check for null-value.",
-                                header.Key,
-                                header.Value,
-                                httpRequest.RequestUri);
+                        var message = $"Error adding header \"{header.Key}\" with value \"{header.Value}\" to outgoing request to \"{httpRequest.RequestUri}\". Check for null-value.";
 
                         throw new RestfulClientException(message, httpRequest, HttpStatusCode.InternalServerError, ex);
                     }
