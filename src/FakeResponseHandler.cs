@@ -65,14 +65,13 @@ namespace ProjectBlackmagic.RestfulClient
         /// <param name="code">Status code of the mocked response.</param>
         /// <param name="endpoint">Request endpoint.</param>
         /// <param name="content">Request content.</param>
-        /// <param name="contentType">Request content type.</param>
         /// <returns>Mocked response handler.</returns>
-        public static FakeResponseHandler Create(HttpStatusCode code, string endpoint, object content = null, ContentType contentType = ContentType.JSON)
+        public static FakeResponseHandler Create(HttpStatusCode code, string endpoint, HttpContent content = null)
         {
             var fakeResponseMessage = new HttpResponseMessage(code);
             if (content != null)
             {
-                fakeResponseMessage.Content = RestfulContent.GetHttpContent(content, contentType);
+                fakeResponseMessage.Content = content;
             }
 
             var fakeResponseHandler = new FakeResponseHandler();
